@@ -21,7 +21,6 @@ body{
   border-radius:6px;
   background:rgba(255,0,0,.08);
   margin:20px 14px;
-  box-sizing:border-box;
 }
 input,button,textarea{
   width:100%;
@@ -47,9 +46,17 @@ button{
   text-align:center;
   margin-top:10px;
   color:#ff6666;
+  min-height:18px;
 }
 #generatorBox{
   display:none;
+}
+#loader{
+  display:none;
+  text-align:center;
+  margin-top:12px;
+  font-size:12px;
+  color:#ffb3b3;
 }
 </style>
 </head>
@@ -66,12 +73,67 @@ button{
   Get your own <b>King Rank Source</b> with a fully customizable footer and brand identity.
 </div>
 
+<div style="text-align:center; margin:16px 0;">
+  <div style="font-size:12px; color:#ffb3b3; margin-bottom:8px;">
+    Contact Owner for payment
+  </div>
+
+  <div style="display:flex; justify-content:center; gap:14px;">
+    
+    <!-- FACEBOOK -->
+    <a href="https://www.facebook.com/profile.php?id=61577828138380" target="_blank"
+       style="
+         width:42px;height:42px;
+         border-radius:50%;
+         border:2px solid red;
+         background:rgba(255,0,0,.15);
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         text-decoration:none;
+         transition:.2s;
+       ">
+      <img
+        src="https://i.ibb.co/gL2cMVSK/5072.png"
+        alt="Facebook"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        style="width:22px;height:22px;">
+    </a>
+
+    <!-- TELEGRAM -->
+    <a href="https://t.me/nelhumble" target="_blank"
+       style="
+         width:42px;height:42px;
+         border-radius:50%;
+         border:2px solid red;
+         background:rgba(255,0,0,.15);
+         display:flex;
+         align-items:center;
+         justify-content:center;
+         text-decoration:none;
+         transition:.2s;
+       ">
+      <img
+        src="https://i.ibb.co/XfnXPDmZ/5069.png"
+        alt="Telegram"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        style="width:22px;height:22px;">
+    </a>
+
+  </div>
+</div>
+
 <input id="keyInput" placeholder="Enter Access Key">
+<button onclick="submitKey()">SUBMIT</button>
 <div class="status" id="keyStatus"></div>
+<div id="loader">⏳ Verifying access...</div>
+
 
 <div id="generatorBox">
-  <input id="footerInput" placeholder="Your Footer Text">
-
   <button onclick="generate()">GENERATE CODE</button>
 
   <div class="status" id="status"></div>
@@ -87,27 +149,40 @@ button{
 const keyInput = document.getElementById("keyInput");
 const keyStatus = document.getElementById("keyStatus");
 const generatorBox = document.getElementById("generatorBox");
+const loader = document.getElementById("loader");
 
-keyInput.addEventListener("input", ()=>{
-  if(checkKey(keyInput.value.trim())){
-    keyStatus.textContent = "✅ Key valid";
-    generatorBox.style.display = "block";
-  }else{
-    keyStatus.textContent = "❌ Invalid or expired key";
-    generatorBox.style.display = "none";
+function submitKey(){
+  keyStatus.textContent = "";
+  generatorBox.style.display = "none";
+
+  if(!keyInput.value.trim()){
+    keyStatus.textContent = "❌ Please enter access key";
+    return;
   }
-});
+
+  loader.style.display = "block";
+
+  setTimeout(()=>{
+    loader.style.display = "none";
+
+    if(checkKey(keyInput.value.trim())){
+      keyStatus.textContent = "✅ Access Granted";
+      generatorBox.style.display = "block";
+    }else{
+      keyStatus.textContent = "❌ Invalid or expired key";
+    }
+  }, 1500); 
+}
 
 async function generate(){
-  const footer = footerInput.value.trim() || "Powered by King Maker";
   const output = document.getElementById("output");
   const status = document.getElementById("status");
 
   try{
-    const res = await fetch("template.html"); // HIWALAY ANG TEMPLATE
+    const res = await fetch("template.html"); // TEMPLATE HIWALAY
     const template = await res.text();
 
-    output.value = template.replace("__USER_FOOTER__", footer);
+    output.value = template;
     status.textContent = "✅ Source generated successfully";
   }catch{
     status.textContent = "❌ Failed to load template";
