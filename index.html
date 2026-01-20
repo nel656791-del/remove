@@ -26,24 +26,26 @@ h2{text-align:center;}
 .notes{
   font-size:12px;
   text-align:center;
-  padding:10px;
+  padding:12px;
   border:1px solid red;
   border-radius:6px;
   background:rgba(255,0,0,.08);
-  margin-bottom:12px;
+  margin:20px 14px 12px;
+  box-sizing:border-box;
 }
-input,button{
+input,button,textarea{
   width:100%;
-  padding:5px;
+  padding:6px;
   margin-top:8px;
   border-radius:6px;
   border:none;
   font-family:Orbitron;
 }
-input{
+input,textarea{
   border:2px solid red;
   background:#000;
-  color:#fff;
+  color:#0f0;
+  font-size:12px;
 }
 button{
   background:red;
@@ -60,19 +62,16 @@ button{
   margin-top:14px;
   text-align:center;
 }
-
 .contact-title{
   font-size:12px;
   margin-bottom:8px;
   color:#ffb3b3;
 }
-
 .social-buttons{
   display:flex;
   justify-content:center;
   gap:12px;
 }
-
 .social{
   width:42px;
   height:42px;
@@ -84,26 +83,14 @@ button{
   justify-content:center;
   transition:.2s;
 }
-
 .social img{
   width:22px;
   height:22px;
   object-fit:contain;
 }
-
 .social:hover{
   transform:scale(1.15);
   box-shadow:0 0 12px rgba(255,0,0,.9);
-}
-.notes{
-  font-size:12px;
-  text-align:center;
-  padding:12px;
-  border:1px solid red;
-  border-radius:6px;
-  background:rgba(255,0,0,.08);
-  margin:20px 14px 12px;   
-  box-sizing:border-box;  
 }
 </style>
 </head>
@@ -111,50 +98,58 @@ button{
 <body>
 
 <div class="notes">
-  <strong>•Important Notice</strong><br>
-  Access to <b>King Maker</b> requires a valid payment.<br>
-  •All payments received are <b>final and non-refundable</b>.<br>
-  Generated access keys automatically expire after <b>40 seconds</b>.<br>
-  •Use this tool at your <b>own risk</b>.<br>
-  •Get your own <b>King Rank</b> site with a fully customizable footer and brand name.
+  <strong>IMPORTANT NOTICE</strong><br>
+  Access to <b>King Maker</b> requires a verified payment.<br>
+  All payments are <b>final and non-refundable</b>.<br>
+  Access keys automatically expire after <b>40 seconds</b>.<br>
+  Use this tool entirely at your <b>own risk</b>.<br>
+  Get your own <b>King Rank Source.Free Version</b> with a fully customizable footer and brand identity.
 </div>
 
 <div class="contact">
   <div class="contact-title">Contact Owner for payment</div>
-
   <div class="social-buttons">
     <a href="PASTE_YOUR_FACEBOOK_LINK_HERE" target="_blank" class="social">
-      <img
-        src="https://i.ibb.co/gL2cMVSK/5072.png"
-        alt="Facebook"
-        loading="eager"
-        fetchpriority="high">
+      <img src="https://i.ibb.co/gL2cMVSK/5072.png" alt="Facebook" loading="eager">
     </a>
-
     <a href="PASTE_YOUR_TELEGRAM_LINK_HERE" target="_blank" class="social">
-      <img
-        src="https://i.ibb.co/XfnXPDmZ/5069.png"
-        alt="Telegram"
-        loading="eager"
-        fetchpriority="high">
+      <img src="https://i.ibb.co/XfnXPDmZ/5069.png" alt="Telegram" loading="eager">
     </a>
   </div>
 </div>
 
+<input id="keyInput" placeholder="Enter Access Key">
+<input id="footerInput" placeholder="Your Footer Text">
 
-  <input id="keyInput" placeholder="Enter Access Key">
-  <input id="footerInput" placeholder="Your Footer Text">
-  <button onclick="generate()">GENERATE CODE</button>
+<button onclick="generate()">GENERATE CODE</button>
 
-  <div class="status" id="status"></div>
-</div>
+<div class="status" id="status"></div>
+
+<textarea id="output" placeholder="Generated source will appear here..." style="height:200px;"></textarea>
+
+<button onclick="copyOutput()">COPY SOURCE</button>
 
 <script src="key.js"></script>
+
 <script>
+
+<footer style="
+  text-align:center;
+  padding:12px;
+  font-family:Orbitron;
+  font-weight:bold;
+  color:#fff;
+  background:#000;
+">
+© __USER_FOOTER__
+</footer>
+`;
+
 function generate(){
   const key = document.getElementById("keyInput").value.trim();
   const footer = document.getElementById("footerInput").value.trim();
   const status = document.getElementById("status");
+  const output = document.getElementById("output");
 
   if(!checkKey(key)){
     status.textContent = "❌ Invalid or expired key";
@@ -163,10 +158,20 @@ function generate(){
 
   const finalFooter = footer || "Powered by King Maker";
 
-  localStorage.setItem("GENERATED_FOOTER", finalFooter);
-  localStorage.setItem("ALLOW_TEMPLATE", "yes");
+  const result = TEMPLATE_SOURCE.replace(
+    "__USER_FOOTER__",
+    finalFooter
+  );
 
-  window.location.href = "template.html";
+  output.value = result;
+  status.textContent = "✅ Source generated successfully";
+}
+
+function copyOutput(){
+  const out = document.getElementById("output");
+  out.select();
+  document.execCommand("copy");
+  alert("✅ Source copied");
 }
 </script>
 
