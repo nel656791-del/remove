@@ -3,149 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
 <title>KING MAKER</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Orbitron;
   background:#05010a;
   color:#fff;
 }
-.notes{
-  font-size:12px;
-  text-align:center;
-  padding:12px;
-  border:1px solid red;
-  border-radius:6px;
-  background:rgba(255,0,0,.08);
-  margin:20px 14px;
+
+
+.wrapper{
+  max-width:420px;
+  margin:24px auto;
+  padding:0 14px;
 }
+
+
+.notes{
+  padding:16px 18px;
+  border-radius:8px;
+  border:1px solid #ff3b3b;
+  background:rgba(255,0,0,.06);
+  font-size:12px;
+}
+.notes-title{
+  font-weight:700;
+  font-size:13px;
+  margin-bottom:12px;
+  letter-spacing:1px;
+}
+.notes ul{
+  padding-left:18px;
+  margin:0;
+}
+.notes li{
+  margin:8px 0;
+  line-height:1.6;
+}
+
+
+.contact{
+  margin:18px 0;
+  text-align:center;
+}
+.contact-title{
+  font-size:12px;
+  color:#ffb3b3;
+  margin-bottom:10px;
+}
+.socials{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+}
+.social{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid red;
+  background:rgba(255,0,0,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.social img{
+  width:22px;
+  height:22px;
+}
+
+
 input,button,textarea{
   width:100%;
-  padding:8px;
-  margin-top:8px;
+  padding:10px;
+  margin-top:10px;
   border-radius:6px;
   border:none;
   font-family:Orbitron;
 }
 input,textarea{
-  border:2px solid red;
+  border:1.5px solid red;
   background:#000;
   color:#0f0;
   font-size:12px;
 }
 button{
-  background:red;
+  background:#d40000;
   color:#fff;
-  font-weight:bold;
+  font-weight:700;
   cursor:pointer;
 }
+button:hover{
+  background:#ff0000;
+}
+
+
 .status{
   text-align:center;
   margin-top:10px;
-  color:#ff6666;
+  font-size:12px;
   min-height:18px;
+  color:#ff7777;
 }
-#generatorBox{
-  display:none;
-}
+
+
 #loader{
   display:none;
+  margin-top:10px;
   text-align:center;
-  margin-top:12px;
   font-size:12px;
   color:#ffb3b3;
+}
+
+
+#generatorBox{
+  display:none;
+  margin-top:14px;
+}
+textarea{
+  height:220px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="wrapper">
 
-<div class="notes">
-  <div style="font-weight:700; font-size:13px; margin-bottom:8px;">
-    ⚠️ IMPORTANT NOTICE
+  <!-- NOTES -->
+  <div class="notes">
+    <div class="notes-title">IMPORTANT NOTICE</div>
+    <ul>
+      <li>Access to <b>King Maker</b> requires verified payment.</li>
+      <li>All payments are <b>final and non-refundable</b>.</li>
+      <li>Access keys expire automatically after <b>40 seconds</b>.</li>
+      <li>Use this tool entirely at your <b>own risk</b>.</li>
+      <li>Premium <b>King Rank Source</b> with custom branding available.</li>
+    </ul>
   </div>
 
-  <div style="line-height:1.6;">
-    <p>• Access to <b>King Maker</b> requires a verified payment.</p>
-    <p>• All payments are <b>final and non-refundable</b>.</p>
-    <p>• Access keys automatically expire after <b>40 seconds</b>.</p>
-    <p>• Use this tool entirely at your <b>own risk</b>.</p>
-    <p>• Get your own <b>King Rank Source</b> with a fully customizable footer and brand identity.</p>
+  <!-- CONTACT -->
+  <div class="contact">
+    <div class="contact-title">Contact Owner for Payment</div>
+    <div class="socials">
+      <a class="social" href="https://www.facebook.com/profile.php?id=61577828138380" target="_blank">
+        <img src="https://i.ibb.co/gL2cMVSK/5072.png" loading="eager">
+      </a>
+      <a class="social" href="https://t.me/nelhumble" target="_blank">
+        <img src="https://i.ibb.co/XfnXPDmZ/5069.png" loading="eager">
+      </a>
+    </div>
   </div>
-</div>
 
-<div style="text-align:center; margin:16px 0;">
-  <div style="font-size:12px; color:#ffb3b3; margin-bottom:8px;">
-    Contact Owner for payment
+  <!-- ACCESS -->
+  <input id="keyInput" placeholder="Enter Access Key">
+  <button onclick="submitKey()">SUBMIT</button>
+
+  <div id="keyStatus" class="status"></div>
+  <div id="loader">⏳ Verifying access…</div>
+
+  <!-- GENERATOR -->
+  <div id="generatorBox">
+    <button onclick="generate()">GENERATE CODE</button>
+    <div id="status" class="status"></div>
+    <textarea id="output" placeholder="Generated source will appear here..."></textarea>
+    <button onclick="copyOutput()">COPY SOURCE</button>
   </div>
 
-  <div style="display:flex; justify-content:center; gap:14px;">
-    
-    <!-- FACEBOOK -->
-    <a href="https://www.facebook.com/profile.php?id=61577828138380" target="_blank"
-       style="
-         width:42px;height:42px;
-         border-radius:50%;
-         border:2px solid red;
-         background:rgba(255,0,0,.15);
-         display:flex;
-         align-items:center;
-         justify-content:center;
-         text-decoration:none;
-         transition:.2s;
-       ">
-      <img
-        src="https://i.ibb.co/gL2cMVSK/5072.png"
-        alt="Facebook"
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-        style="width:22px;height:22px;">
-    </a>
-
-    <!-- TELEGRAM -->
-    <a href="https://t.me/nelhumble" target="_blank"
-       style="
-         width:42px;height:42px;
-         border-radius:50%;
-         border:2px solid red;
-         background:rgba(255,0,0,.15);
-         display:flex;
-         align-items:center;
-         justify-content:center;
-         text-decoration:none;
-         transition:.2s;
-       ">
-      <img
-        src="https://i.ibb.co/XfnXPDmZ/5069.png"
-        alt="Telegram"
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
-        style="width:22px;height:22px;">
-    </a>
-
-  </div>
-</div>
-
-<input id="keyInput" placeholder="Enter Access Key">
-<button onclick="submitKey()">SUBMIT</button>
-<div class="status" id="keyStatus"></div>
-<div id="loader">⏳ Verifying access...</div>
-
-
-<div id="generatorBox">
-  <button onclick="generate()">GENERATE CODE</button>
-
-  <div class="status" id="status"></div>
-
-  <textarea id="output" placeholder="Generated source will appear here..." style="height:220px;"></textarea>
-
-  <button onclick="copyOutput()">COPY SOURCE</button>
 </div>
 
 <script src="key.js"></script>
@@ -157,46 +185,41 @@ const generatorBox = document.getElementById("generatorBox");
 const loader = document.getElementById("loader");
 
 function submitKey(){
-  keyStatus.textContent = "";
-  generatorBox.style.display = "none";
+  keyStatus.textContent="";
+  generatorBox.style.display="none";
 
   if(!keyInput.value.trim()){
-    keyStatus.textContent = "❌ Please enter access key";
+    keyStatus.textContent="❌ Please enter access key";
     return;
   }
 
-  loader.style.display = "block";
+  loader.style.display="block";
 
   setTimeout(()=>{
-    loader.style.display = "none";
-
+    loader.style.display="none";
     if(checkKey(keyInput.value.trim())){
-      keyStatus.textContent = "✅ Access Granted";
-      generatorBox.style.display = "block";
+      keyStatus.textContent="✅ Access Granted";
+      generatorBox.style.display="block";
     }else{
-      keyStatus.textContent = "❌ Invalid or expired key";
+      keyStatus.textContent="❌ Invalid or expired key";
     }
-  }, 1500); 
+  },1500);
 }
 
 async function generate(){
-  const output = document.getElementById("output");
-  const status = document.getElementById("status");
-
+  const output=document.getElementById("output");
+  const status=document.getElementById("status");
   try{
-    const res = await fetch("template.html"); // TEMPLATE HIWALAY
-    const template = await res.text();
-
-    output.value = template;
-    status.textContent = "✅ Source generated successfully";
+    const res=await fetch("template.html");
+    output.value=await res.text();
+    status.textContent="✅ Source generated successfully";
   }catch{
-    status.textContent = "❌ Failed to load template";
+    status.textContent="❌ Failed to load template";
   }
 }
 
 function copyOutput(){
-  const out = document.getElementById("output");
-  out.select();
+  output.select();
   document.execCommand("copy");
   alert("✅ Source copied");
 }
