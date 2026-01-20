@@ -1,8 +1,8 @@
 const EXPIRE_TIME = 40 * 1000; 
 
 const VALID_KEYS = [
-  "cris1234",
-  "cris5678",
+  "cris12345",
+  "cris56789",
   "king-2026"
 ];
 
