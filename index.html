@@ -13,15 +13,6 @@ body{
   background:#05010a;
   color:#fff;
 }
-.card{
-  max-width:380px;
-  margin:60px auto;
-  padding:20px;
-  border:2px solid red;
-  border-radius:10px;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(10px);
-}
 .notes{
   font-size:12px;
   text-align:center;
@@ -29,7 +20,8 @@ body{
   border:1px solid red;
   border-radius:6px;
   background:rgba(255,0,0,.08);
-  margin-bottom:15px;
+  margin:20px 14px;
+  box-sizing:border-box;
 }
 input,button,textarea{
   width:100%;
@@ -53,111 +45,74 @@ button{
 }
 .status{
   text-align:center;
-  color:#ff6666;
   margin-top:10px;
+  color:#ff6666;
 }
-.hidden{display:none}
+#generatorBox{
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
-<div class="card">
 
 <div class="notes">
-  <b>IMPORTANT NOTICE</b><br>
-  • Access requires a valid key<br>
-  • Keys expire automatically<br>
-  • All sales are final<br>
-  • Use at your own risk
+  <strong>IMPORTANT NOTICE</strong><br>
+  Access to <b>King Maker</b> requires a verified payment.<br>
+  All payments are <b>final and non-refundable</b>.<br>
+  Access keys automatically expire after <b>40 seconds</b>.<br>
+  Use this tool entirely at your <b>own risk</b>.<br>
+  Get your own <b>King Rank Source</b> with a fully customizable footer and brand identity.
 </div>
 
 <input id="keyInput" placeholder="Enter Access Key">
-<input id="footerInput" placeholder="Your Footer Text">
+<div class="status" id="keyStatus"></div>
 
-<button onclick="checkAndUnlock()">VERIFY KEY</button>
+<div id="generatorBox">
+  <input id="footerInput" placeholder="Your Footer Text">
 
-<div id="status" class="status"></div>
+  <button onclick="generate()">GENERATE CODE</button>
 
-<button id="generateBtn" class="hidden" onclick="generate()">GENERATE CODE</button>
+  <div class="status" id="status"></div>
 
-<textarea id="output" class="hidden"
-  placeholder="Generated source will appear here..."
-  style="height:220px;"></textarea>
+  <textarea id="output" placeholder="Generated source will appear here..." style="height:220px;"></textarea>
 
-<button id="copyBtn" class="hidden" onclick="copyOutput()">COPY SOURCE</button>
-
+  <button onclick="copyOutput()">COPY SOURCE</button>
 </div>
 
 <script src="key.js"></script>
 
 <script>
-/* ================= TEMPLATE ================= */
-const TEMPLATE_SOURCE = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>King Rank</title>
-<style>
-body{
-  background:#000;
-  color:#fff;
-  font-family:Orbitron;
-  text-align:center;
-}
-footer{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  padding:12px;
-  font-weight:bold;
-  background:linear-gradient(90deg,violet,red,blue);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-}
-</style>
-</head>
-<body>
+const keyInput = document.getElementById("keyInput");
+const keyStatus = document.getElementById("keyStatus");
+const generatorBox = document.getElementById("generatorBox");
 
-<h2>KING RANK ACTIVE</h2>
+keyInput.addEventListener("input", ()=>{
+  if(checkKey(keyInput.value.trim())){
+    keyStatus.textContent = "✅ Key valid";
+    generatorBox.style.display = "block";
+  }else{
+    keyStatus.textContent = "❌ Invalid or expired key";
+    generatorBox.style.display = "none";
+  }
+});
 
-<footer>© __USER_FOOTER__</footer>
-
-</body>
-</html>
-`;
-
-function checkAndUnlock(){
-  const key = document.getElementById("keyInput").value.trim();
+async function generate(){
+  const footer = footerInput.value.trim() || "Powered by King Maker";
+  const output = document.getElementById("output");
   const status = document.getElementById("status");
 
-  if(!checkKey(key)){
-    status.textContent = "❌ Invalid or expired key";
-    return;
+  try{
+    const res = await fetch("template.html"); // HIWALAY ANG TEMPLATE
+    const template = await res.text();
+
+    output.value = template.replace("__USER_FOOTER__", footer);
+    status.textContent = "✅ Source generated successfully";
+  }catch{
+    status.textContent = "❌ Failed to load template";
   }
-
-  status.textContent = "✅ Key accepted";
-  document.getElementById("generateBtn").classList.remove("hidden");
 }
-
-
-function generate(){
-  const footer = document.getElementById("footerInput").value.trim();
-  const output = document.getElementById("output");
-
-  const finalFooter = footer || "Powered by King Maker";
-
-  output.value = TEMPLATE_SOURCE.replace(
-    "__USER_FOOTER__",
-    finalFooter
-  );
-
-  output.classList.remove("hidden");
-  document.getElementById("copyBtn").classList.remove("hidden");
-}
-
 
 function copyOutput(){
   const out = document.getElementById("output");
