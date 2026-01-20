@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<title>KING MAKER</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Orbitron;
+  background:#05010a;
+  color:#fff;
+}
+.card{
+  max-width:380px;
+  margin:60px auto;
+  padding:20px;
+  border:2px solid red;
+  border-radius:10px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
+}
+h2{text-align:center;}
+.notes{
+  font-size:12px;
+  text-align:center;
+  padding:10px;
+  border:1px solid red;
+  border-radius:6px;
+  background:rgba(255,0,0,.08);
+  margin-bottom:12px;
+}
+input,button{
+  width:100%;
+  padding:5px;
+  margin-top:8px;
+  border-radius:6px;
+  border:none;
+  font-family:Orbitron;
+}
+input{
+  border:2px solid red;
+  background:#000;
+  color:#fff;
+}
+button{
+  background:red;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+}
+.status{
+  text-align:center;
+  color:#ff6666;
+  margin-top:10px;
+}
+.contact{
+  margin-top:14px;
+  text-align:center;
+}
+
+.contact-title{
+  font-size:12px;
+  margin-bottom:8px;
+  color:#ffb3b3;
+}
+
+.social-buttons{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+}
+
+.social{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid red;
+  background:rgba(255,0,0,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+}
+
+.social img{
+  width:22px;
+  height:22px;
+  object-fit:contain;
+}
+
+.social:hover{
+  transform:scale(1.15);
+  box-shadow:0 0 12px rgba(255,0,0,.9);
+}
+.notes{
+  font-size:12px;
+  text-align:center;
+  padding:12px;
+  border:1px solid red;
+  border-radius:6px;
+  background:rgba(255,0,0,.08);
+  margin:20px 14px 12px;   
+  box-sizing:border-box;  
+}
+</style>
+</head>
+
+<body>
+
+<div class="notes">
+  <strong>•Important Notice</strong><br>
+  Access to <b>King Maker</b> requires a valid payment.<br>
+  •All payments received are <b>final and non-refundable</b>.<br>
+  Generated access keys automatically expire after <b>40 seconds</b>.<br>
+  •Use this tool at your <b>own risk</b>.<br>
+  •Get your own <b>King Rank</b> site with a fully customizable footer and brand name.
+</div>
+
+<div class="contact">
+  <div class="contact-title">Contact Owner for payment</div>
+
+  <div class="social-buttons">
+    <a href="PASTE_YOUR_FACEBOOK_LINK_HERE" target="_blank" class="social">
+      <img
+        src="https://i.ibb.co/gL2cMVSK/5072.png"
+        alt="Facebook"
+        loading="eager"
+        fetchpriority="high">
+    </a>
+
+    <a href="PASTE_YOUR_TELEGRAM_LINK_HERE" target="_blank" class="social">
+      <img
+        src="https://i.ibb.co/XfnXPDmZ/5069.png"
+        alt="Telegram"
+        loading="eager"
+        fetchpriority="high">
+    </a>
+  </div>
+</div>
+
+
+  <input id="keyInput" placeholder="Enter Access Key">
+  <input id="footerInput" placeholder="Your Footer Text">
+  <button onclick="generate()">GENERATE CODE</button>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script src="key.js"></script>
+<script>
+function generate(){
+  const key = document.getElementById("keyInput").value.trim();
+  const footer = document.getElementById("footerInput").value.trim();
+  const status = document.getElementById("status");
+
+  if(!checkKey(key)){
+    status.textContent = "❌ Invalid or expired key";
+    return;
+  }
+
+  const finalFooter = footer || "Powered by King Maker";
+
+  localStorage.setItem("GENERATED_FOOTER", finalFooter);
+  localStorage.setItem("ALLOW_TEMPLATE", "yes");
+
+  window.location.href = "template.html";
+}
+</script>
+
+</body>
+</html>
